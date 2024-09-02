@@ -4,7 +4,7 @@
   "i18n-ally.sourceLanguage": "zh-Hans-CN",
   "typescript.tsdk": "./node_modules/typescript/lib",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "conventionalCommits.scopes": [
     "deps",
