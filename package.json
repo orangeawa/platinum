@@ -2,7 +2,7 @@
   "name": "platinum",
   "version": "0.7.0-alpha.6",
   "private": true,
-  "packageManager": "pnpm@7.14.0",
+  "packageManager": "pnpm@9.9.0",
   "description": "An always-experimental frontend for PatchyVideo/PatchyVideo",
   "author": "VoileLabs",
   "license": "MIT",
