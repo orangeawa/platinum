@@ -26,10 +26,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      - uses: pnpm/action-setup@v2.2.1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.4.0
         with:
-          run_install: |
-            args: [--frozen-lockfile, --strict-peer-dependencies]
+          version: 8.7.5  # 可以根据需要调整为最新的稳定版本
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --strict-peer-dependencies
         timeout-minutes: 10
 
       - name: Codegen
