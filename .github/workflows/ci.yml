@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches:
@@ -7,46 +8,45 @@ on:
 jobs:
   build:
     name: Build and Deploy to Vercel
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v2
+      # 设置 Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
-          check-latest: true
-
-      - name: Cache pnpm modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
+          node-version: 18
+          cache: 'pnpm'
+          
+      # 安装 pnpm
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2.4.0
+        uses: pnpm/action-setup@v2.2.4
         with:
-          version: 8.7.5  # 可以根据需要调整为最新的稳定版本
+          version: 8.7.5
 
+      # 安装依赖
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --strict-peer-dependencies
-        timeout-minutes: 10
 
+      # 生成代码
       - name: Codegen
         run: pnpm codegen
-        timeout-minutes: 5
 
-      - name: Test
+      # 运行测试
+      - name: Run tests
         run: pnpm test
-        timeout-minutes: 15
 
-      - name: Build
+      # 构建项目
+      - name: Build project
         run: pnpm build
-        timeout-minutes: 15
 
+      # 部署到 Vercel（预发布环境）
       - name: Deploy to Vercel (Staging)
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: amondnet/vercel-action@v20
@@ -54,10 +54,10 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: ./dist
+          working-directory: ./
           github-comment: false
-        timeout-minutes: 5
 
+      # 部署到 Vercel（生产环境）
       - name: Deploy to Vercel (Production)
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: amondnet/vercel-action@v20
@@ -65,7 +65,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: --prod
-          working-directory: ./dist
+          vercel-args: '--prod'
+          working-directory: ./
           github-comment: false
-        timeout-minutes: 5
